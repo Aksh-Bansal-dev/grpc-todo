@@ -40,26 +40,25 @@ function addTodos(call: any) {
   call.on("end", () => {
     call.end();
   });
-  call.end();
 }
 
 function updateTodo(call: any, callback: any) {
-  const { id, newTodo } = call.request;
+  const { id, todo } = call.request;
   let flag = false;
   for (let i = 0; i < todos.length; i++) {
     if (todos[i].id === id) {
-      todos[i].todo = newTodo;
+      todos[i].todo = todo;
       flag = true;
       break;
     }
   }
   if (!flag) {
-    callback("Index not found", null);
-  } else callback(null, { id, todo: newTodo });
+    callback(null, call.request);
+  } else callback(null, { id, todo: todo });
 }
 
 function deleteTodo(call: any, callback: any) {
-  const id = call.request;
+  const id = call.request.id;
   let flag = false;
 
   todos = todos.filter((e) => {
@@ -68,8 +67,8 @@ function deleteTodo(call: any, callback: any) {
   });
 
   if (!flag) {
-    callback("Index not found", null);
-  } else callback(null, id);
+    callback(new Error("Index not found"), { id });
+  } else callback(null, { id });
 }
 
 const server = new grpc.Server();
